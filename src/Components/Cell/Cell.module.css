@@ -1,7 +1,10 @@
-.cell_style {
-  border: 2px solid #F1F5DA;
-  border-radius: 3px;
-  width: 10px;
-  height: 10px;
+.Cell{
+  border: 1px solid #F1F5DA;
+  background-color: tomato;
+  border-radius: 50px;
+  width: 5px;
+  height: 5px;
+  margin-top: 320px;
+  position: absolute;
 }
 

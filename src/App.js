@@ -1,25 +1,25 @@
-import logo from './logo.svg';
-import './App.css';
+import styles from './App.module.css';
+import React from 'react';
+import {connect} from "react-redux";
+import FormularContainer from "./Components/Formular/FormularContainer";
+import GameFieldContainer from "./Components/GameField/GameFieldContainer";
 
-function App() {
-  return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
-  );
+
+
+const App = (props) => {
+    return (
+        <div className={styles.App}>
+            <FormularContainer/>
+            <GameFieldContainer />
+        </div>
+    );
 }
 
-export default App;
+let mapStateToProps = (state) => {
+    return {
+
+    }
+}
+let AppContainer = connect(mapStateToProps, {})(App)
+
+export default AppContainer;

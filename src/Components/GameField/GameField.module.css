@@ -1,4 +1,34 @@
-.App {
-  text-align: center;
+.board {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  aling-content: left;
+  align-items: flex-start;
+  justify-content: flex-start;
+  background-color: lavender;
+  padding: 10px;
 }
 
+.buttons {
+  display: flex; justify-content: center;
+  flex-direction: column;
+}
+
+button {
+  padding: 10px;
+  background-color: skyblue;
+  border-radius: 10px;
+  color: midnightblue;
+  border: 1px solid teal;
+  margin: 10px;
+  font-size: large;
+}
+
+.main {
+  display: flex;
+  flex-direction: row;
+  aling-content: left;
+  align-items: flex-start;
+  justify-content: flex-start;
+
+}
