@@ -1,15 +1,19 @@
 import React from "react";
 import {connect} from "react-redux";
 import GameField from "./GameField";
-import Formular from "../Formular/Formular";
+import GameFieldTwo from "./GameFieldTwo";
 
 
 class GameFieldContainer extends React.Component {
-
-
+componentDidUpdate= ( prevProps) => {
+    if (prevProps!= this.props) {
+        this.forceUpdate(); 
+    }
+}
     render() {
         return (<>
-               <GameField rows={this.props.fieldWidth} cols={this.props.fieldHeight} lifeCycles={this.props.lifeCycles}/>
+               <GameField cols={this.props.fieldWidth} rows={this.props.fieldHeight} lifeCycles={this.props.lifeCycles}/>
+               {/* <GameFieldTwo rows={this.props.fieldWidth} cols={this.props.fieldHeight} lifeCycles={this.props.lifeCycles}/> */}
             </>
         )
     }

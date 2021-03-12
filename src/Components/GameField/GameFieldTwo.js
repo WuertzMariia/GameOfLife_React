@@ -2,7 +2,36 @@ import React, {useEffect, useState} from 'react';
 import Cell from "../Cell/Cell";
 import styles from './GameField.module.css'
 
-const GameField = (props) => {
+const GameFieldTwo = (props) => {
+
+    let [running, setStateOfGame] = useState(false);
+    let [counter, setCounter] = useState(props.lifeCycles); 
+let timeOutHandler; 
+useEffect(()=> {
+    if(running) {
+        stopGame();
+        setCounter(props.lifeCycles); 
+        
+    }
+
+}, [props.lifeCycles]); 
+
+useEffect(()=> {})
+
+    let runGame = () => {
+        setStateOfGame(true);
+        for (let y = 0; y < props.rows; y++) {
+            for (let x = 0; x < props.cols; x++) {
+                if (Math.random() >= 0.8) {
+                    board[y][x] = true;
+                } else {
+                    board[y][x] = false;
+                }
+
+            }
+        }
+        nextIteration(); 
+    }
     let makeBoard = () => {
 
         let board = [];
@@ -29,36 +58,8 @@ const GameField = (props) => {
 
         return cells;
     }
-    let [running, setStateOfGame] = useState(false);
-    let [timeoutHandler, setTimeOut] = useState(null);
-    let [counter, setCounter] = useState(props.lifeCycles); 
     let [board, setNewBoard] = useState(makeBoard());
-    let [cells, setNewLivingCells] = useState([]);
-    let [newBoard, setNextBoard] = useState(makeBoard()); 
-useEffect(()=> {
-    stopGame();
-    setNewBoard(makeBoard());
-    setNewLivingCells([]); 
-    setNextBoard(makeBoard()); 
-}, [props]); 
-
-
-    let runGame = () => {
-        setStateOfGame(true);
-        for (let y = 0; y < props.rows; y++) {
-            for (let x = 0; x < props.cols; x++) {
-                if (Math.random() >= 0.8) {
-                    board[y][x] = true;
-                } else {
-                    board[y][x] = false;
-                }
-
-            }
-        }
-        nextIteration(); 
-    }
-   
- 
+    let [cells, setNewLivingCells] = useState(makeCells());
     let randomize = () => {
 
         for (let y = 0; y < props.rows; y++) {
@@ -73,9 +74,9 @@ useEffect(()=> {
         }
         setNewLivingCells(makeCells());
         if(counter>1) {
-            setTimeOut(setTimeout(() => {
+            timeOutHandler = setTimeout(() => {
                 randomize();
-            }, 100))
+            }, 1000)
             setCounter(counter--); 
         }
         
@@ -85,20 +86,19 @@ useEffect(()=> {
     let stopGame = () => {
         setStateOfGame(false);
         setCounter(props.lifeCycles); 
-        if (timeoutHandler) {
-            setTimeOut(clearTimeout(timeoutHandler));  
-        }   setNewBoard(makeBoard());
+
+        console.log(timeOutHandler); 
+         clearTimeout(timeOutHandler);
+   
+    
     }
     let clearField = () => {
-stopGame(); 
-setStateOfGame(true); 
         setNewBoard(makeBoard());
         setNewLivingCells(makeCells());
-  runGame(); 
-
+   stopGame(); 
     }
 
-
+let [newBoard, setNextBoard] = useState(makeBoard()); 
     let nextIteration = () => {
 
         
@@ -123,9 +123,9 @@ setStateOfGame(true);
         board = newBoard; 
         setNewLivingCells(makeCells());
         if(counter>1) {
-            setTimeOut(setTimeout(() => {
+            timeOutHandler = setTimeout(() => {
                 nextIteration();
-            }, 100))
+            }, 100)
             setCounter(counter--); 
         }
 
@@ -152,7 +152,7 @@ const CELL_SIZE=20;
             <div className={styles.board}
                  style={{ height: props.rows*20, width: props.cols*20, backgroundSize: `${CELL_SIZE}px ${CELL_SIZE}px`}}>
 
-                {running && cells.map(cell => (
+                {cells.map(cell => (
                     <Cell x={cell.x} y={cell.y} key={`${cell.x},${cell.y}`}/>
                 ))}
             </div>
@@ -181,4 +181,4 @@ const CELL_SIZE=20;
     )
 }
 
-export default GameField;
+export default GameFieldTwo;

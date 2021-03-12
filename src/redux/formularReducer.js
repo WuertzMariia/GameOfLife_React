@@ -4,12 +4,13 @@ const SET_NEW_FORMULAR_VALUES = "formular/set/new/values";
 let initialState = {
 width: 20,
     height: 20,
-    lifeCycles: 100
+    lifeCycles: 10
 }
 
 export let formularReducer = (state = initialState, action) => {
     switch(action.type) {
         case SET_NEW_FORMULAR_VALUES: {
+            debugger; 
             return {
                 ...state,
                 width: action.width,
