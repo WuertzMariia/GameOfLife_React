@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useEffect, useState, useRef, createRef } from 'react';
 import Cell from "../Cell/Cell";
 import styles from './GameField.module.css'
 
@@ -33,8 +33,9 @@ const GameField = (props) => {
     let [timeoutHandler, setTimeOut] = useState(null);
     let [counter, setCounter] = useState(props.lifeCycles); 
     let [board, setNewBoard] = useState(makeBoard());
-    let [cells, setNewLivingCells] = useState([]);
+    let [cells, setNewLivingCells] = useState(makeCells());
     let [newBoard, setNextBoard] = useState(makeBoard()); 
+    let [continueGame, setContinueGame] = useState(false); 
 useEffect(()=> {
     stopGame();
     setNewBoard(makeBoard());
@@ -58,7 +59,20 @@ useEffect(()=> {
         nextIteration(); 
     }
    
- 
+ let generalSetTimeOutFunc = (func) => {
+    setNewLivingCells(makeCells());
+    if(counter>1) {
+        setTimeOut(setTimeout(() => {
+            func();
+        }, 100))
+        setCounter(counter--); 
+    } else if (counter <= 1) {
+        setContinueGame(true);
+        setStateOfGame(false); 
+        setCounter(props.lifeCycles); 
+        setNewBoard(board); 
+    }
+ }
     let randomize = () => {
 
         for (let y = 0; y < props.rows; y++) {
@@ -71,14 +85,7 @@ useEffect(()=> {
 
             }
         }
-        setNewLivingCells(makeCells());
-        if(counter>1) {
-            setTimeOut(setTimeout(() => {
-                randomize();
-            }, 100))
-            setCounter(counter--); 
-        }
-        
+        generalSetTimeOutFunc(randomize); 
 
     }
 
@@ -88,6 +95,8 @@ useEffect(()=> {
         if (timeoutHandler) {
             setTimeOut(clearTimeout(timeoutHandler));  
         }   setNewBoard(makeBoard());
+        setNewLivingCells([]); 
+        setContinueGame(false); 
     }
     let clearField = () => {
 stopGame(); 
@@ -100,10 +109,7 @@ setStateOfGame(true);
 
 
     let nextIteration = () => {
-
-        
         setNextBoard(makeBoard()); 
-
         for (let y = 0; y < props.rows; y++) {
             for (let x = 0; x < props.cols; x++) {
                 let neighbors = nextGenaration(board, x, y);
@@ -120,14 +126,9 @@ setStateOfGame(true);
                 }
             }
         }
+        
         board = newBoard; 
-        setNewLivingCells(makeCells());
-        if(counter>1) {
-            setTimeOut(setTimeout(() => {
-                nextIteration();
-            }, 100))
-            setCounter(counter--); 
-        }
+        generalSetTimeOutFunc(nextIteration); 
 
     }
 
@@ -147,12 +148,40 @@ setStateOfGame(true);
         return neighbors;
     }
 const CELL_SIZE=20;
+
+// MOUSEMOVE
+// Cursor position
+let  textInput = React.useRef(null); 
+
+let x=0;
+let y=0; 
+let handleMouseMove = (event) => {
+// rect.left - расстояние от левой границы до начала div
+// rect.top - y : расстояние от верха до обьекта
+// window.pageXOffset window.pageYOffset - учет прокрутки страницы
+// document.documentElement.clientLeft - ширина border слева
+
+
+let rect = textInput.current.getBoundingClientRect(); 
+let offSetx = event.pageX - (rect.left+window.pageXOffset-document.documentElement.clientLeft);
+let offSety = event.pageY - ((rect.top+window.pageYOffset)-document.documentElement.clientTop);
+if (offSety < 0 ){
+    offSety =0; 
+}
+x = Math.floor(offSetx/CELL_SIZE);
+y = Math.floor(offSety/CELL_SIZE); 
+
+if(x>=0 && x <=props.cols && y>=0 && y<=props.rows) {
+    board[y][x] = !board[y][x]; 
+}
+setNewLivingCells(makeCells()); 
+}
     return (
         <div className={styles.main}>
-            <div className={styles.board}
-                 style={{ height: props.rows*20, width: props.cols*20, backgroundSize: `${CELL_SIZE}px ${CELL_SIZE}px`}}>
+            <div className={styles.board} onClick={(event)=> handleMouseMove(event)} ref={textInput}
+                 style={{ minHeight: props.rows*20, minWidth: props.cols*20, backgroundSize: `${CELL_SIZE}px ${CELL_SIZE}px`}}>
 
-                {running && cells.map(cell => (
+                {cells.map(cell => (
                     <Cell x={cell.x} y={cell.y} key={`${cell.x},${cell.y}`}/>
                 ))}
             </div>
@@ -161,12 +190,17 @@ const CELL_SIZE=20;
                     <button className="button" onClick={() => {
                         stopGame()
                     }}>Stop
-                    </button> :
+                    </button> : continueGame ? <button className="button" onClick={() => {
+                      
+                      nextIteration(); 
+                  }}>Run again
+                  </button> :
                    <button className="button" onClick={() => {
                       
                         runGame()
                     }}>Run
                     </button>}
+                   
                    {running? <button className="button" onClick={() => {
                         stopGame()
                     }}>Stop
@@ -175,7 +209,22 @@ const CELL_SIZE=20;
                         randomize(); 
                     }}>Random
                     </button> }
-                <button className="button" onClick={clearField}>Generate new cells</button>
+
+                    <button className={styles.button} onClick={clearField}>Generate new cells</button>
+                       
+                       {(running || continueGame) && <button className="button" onClick={() => {
+                        stopGame()
+                    }}>Stop
+                    </button>}
+            </div>
+            <div className={styles.coord}>
+                <p>Coordinates</p>
+                <div>
+             
+
+                    <p>x: {x}</p>
+                    <p>y: {y}</p>
+                </div>
             </div>
         </div>
     )
